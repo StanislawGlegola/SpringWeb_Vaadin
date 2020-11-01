@@ -3,7 +3,7 @@ package pl.glegola.vaadinproject.model;
 public class Town {
     private String name;
     private Voivodeship voivodeship;
-    private double citizens;
+    private int citizens;
     private boolean city;
 
     public String getName() {
@@ -26,7 +26,7 @@ public class Town {
         return citizens;
     }
 
-    public void setCitizens(double citizens) {
+    public void setCitizens(int citizens) {
         this.citizens = citizens;
     }
 
