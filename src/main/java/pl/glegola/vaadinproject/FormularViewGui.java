@@ -5,11 +5,16 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.glegola.vaadinproject.model.Town;
@@ -17,19 +22,17 @@ import pl.glegola.vaadinproject.model.Voivodeship;
 
 import java.util.List;
 
-@Route("aa")
-public class Add extends HorizontalLayout {
+@Route("")
+public class FormularViewGui extends HorizontalLayout {
 
     @Autowired
-    public void add(TownList townList) {
+    public void formularAndGrid(TownList townList) {
+
+        Span title = new Span("Add your city to list.");
         TextField fieldCityName = new TextField("City name: ");
-        NumberField fieldNumberOfCitizens = new NumberField("Number of citizens: ");
-
         ComboBox<Voivodeship> voivodeshipComboBox = new ComboBox<>("Select Voivodeship: ", Voivodeship.values());
-
+        IntegerField fieldNumberOfCitizens = new IntegerField ("Number of citizens: ");
         Checkbox checkboxCityStatus = new Checkbox("Has city status?");
-        checkboxCityStatus.setValue(false);
-
         Button buttonAdd = new Button("Add new city!");
 
         buttonAdd.addClickListener(clickEvent -> {
@@ -46,21 +49,24 @@ public class Add extends HorizontalLayout {
             UI.getCurrent().getPage().reload();
         });
 
-        VerticalLayout verticalLayout = new VerticalLayout(fieldCityName, voivodeshipComboBox, fieldNumberOfCitizens, checkboxCityStatus, buttonAdd);
-        verticalLayout.setWidth("30%");
-        add(verticalLayout);
-    }
+        VerticalLayout formular = new VerticalLayout(title, fieldCityName, voivodeshipComboBox, fieldNumberOfCitizens, checkboxCityStatus, buttonAdd);
+        formular.setWidth("30%");
 
-    @Autowired
-    public void grid(TownList townlist) {
-        List<Town> townListFull = townlist.getTownList();
-
+        List<Town> townListFull = townList.getTownList();
         Grid<Town> grid = new Grid<>(Town.class);
+        grid.addColumn(new ComponentRenderer<>(town -> {
+            Button buttonDelete = new Button("Delete");
+            buttonDelete.addClickListener(buttonClickEvent -> {
+                townListFull.remove(town);
+                UI.getCurrent().getPage().reload();
+            });
+            return buttonDelete;
+        }));
         grid.setItems(townListFull);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout(grid);
-        horizontalLayout.setSizeFull();
+        HorizontalLayout table = new HorizontalLayout(grid);
+        table.setSizeFull();
 
-        add(horizontalLayout);
+        add(formular, table);
     }
 }
